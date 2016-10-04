@@ -1,52 +1,57 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { Component } from 'react';
 import {
-  AppRegistry,
   StyleSheet,
   Text,
-  View
+  TextInput,
+  View,
+  TouchableHighlight
 } from 'react-native';
 
+import firebase from '../lib/firebase'
+
 class Plong extends Component {
+  constructor(props) {
+    super(props);
+    this.onChangeEmail = this.onChangeEmail.bind(this);
+    this.onChangePassword = this.onChangePassword.bind(this);
+  }
+
+  onChangeEmail(email) { this.setState({email}) };
+  onChangePassword(password) { this.setState({password}) };
+  onSubmit(email, password) {
+    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log(`ERROR: ${errorCode}: ${errorMessage}`);
+    });
+  }
+
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
+      <View>
+        <Text style={styles.welcome}>Welcome to Plong</Text>
+        <TextInput style={styles.textInput} onChangeText={this.onChangeEmail} placeholder="Email" />
+        <TextInput secureTextEntry style={styles.textInput} onChangeText={this.onChangePassword} placeholder="Password" />
+
+        <TouchableHighlight onPress={() => this.onSubmit(this.state.email, this.state.password)}>
+          <Text>Submit</Text>
+        </TouchableHighlight>
+
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
   welcome: {
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  textInput: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1
   },
 });
 
